@@ -2,7 +2,7 @@ Some background: This archive contains the source code for the original Prince o
 
 For a capsule summary of Prince of Persia's 25-year history, and my involvement with its various incarnations, see [jordanmechner.com/prince-of-persia] (http://jordanmechner.com/prince-of-persia) and [jordanmechner.com/bio] (http://jordanmechner.com/bio).
 
-For those interested in a fuller understanding of the context -- creative, business, personal, and technical -- in which this source code was created, I've published my dev journals from that period as a print book, ebook, and in blog form. Take your pick at jordanmechner.com/ebook.
+For those interested in a fuller understanding of the context -- creative, business, personal, and technical -- in which this source code was created, I've published my dev journals from that period as a print book, ebook, and in blog form. Take your pick at [jordanmechner.com/ebook] (http://jordanmechner.com/ebook).
 
 For those who'd like to dig into the source code itself, I've posted an explanatory technical document at [http://jordanmechner.com/wp-content/uploads/1989/10/popsource009.pdf] (http://jordanmechner.com/wp-content/uploads/1989/10/popsource009.pdf) which should help. This is a package I put together in October 1989 for the benefit of the teams that were undertaking the ports of POP to various platforms such as PC, Amiga, Sega, Genesis, etc.
 
