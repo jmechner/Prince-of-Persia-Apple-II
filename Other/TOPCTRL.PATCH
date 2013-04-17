@@ -1,0 +1,12 @@
+--- a/obj/TOPCTRL.PATCH.S	2012-06-15 23:48:54.000000000 -0700
++++ b/obj/TOPCTRL.PATCH.S	2013-03-18 16:41:58.000000000 -0700
+@@ -261,6 +261,9 @@
+  jsr reloadblue
+  else
+ 
++ ldx #$ff ;Reset stack pointer at level start
++ txs
++ 
+  lda #" "
+  jsr lrcls
+  jsr vblank
