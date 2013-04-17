@@ -1,0 +1,89 @@
+==Quick Start
+These are the quick steps to download and build the Prince of Persia sources to create an Apple II disk image:
+* Download the Prince-of-Persia-Apple-II compressed archive from 
+  [[https://github.com/adamgreen/Prince-of-Persia-Apple-II/archive/working.zip]]
+* Decompress and extract the contents of this archive.
+* Follow the steps appropriate for your platform to complete your first build:
+
+===Windows
+These steps will assume that you have extracted the Prince-of-Persia-Apple-II archive to c:\Prince-of-Persia-Apple-II.
+If you extracted to a different directory then you will need to substitute the path you used into the steps below.
+
+* Start "Command Prompt".  [[http://www.computerhope.com/issues/chdos.htm | This page]] contains instructions on how
+  to launch the command prompt from various versions of Windows.  Subsequent steps will be performed from within this
+  command prompt.
+* {{{cd c:\Prince-of-Persia-Apple-II}}}
+* {{{Build\win32\make clean all}}}
+
+This will result in the creation of a c:\Prince-of-Persia-Apple-II\PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+
+//Tested on: Windows 7, and Windows XP//
+
+===Macintosh OS X
+These steps will assume that you have extracted the Prince-of-Persia-Apple-II archive to /Prince-of-Persia-Apple-II.
+If you extracted to a different directory then you will need to substitute the path you used into the steps below.
+
+* Start "Terminal".  This can be launched by pressing the {{{Command + Space}}} keys together to display the Spotlight 
+  search control, typing "Terminal", and launching the top Spotlight search result.  Subsequent steps will be performed
+  from within this terminal.
+* {{{cd /Prince-of-Persia-Apple-II}}}
+* {{{Build/osx32/make clean all}}}
+
+This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+
+//Tested on: Lion, and Snow Leopard//
+
+===Linux
+These steps will assume that you have extracted the Prince-of-Persia-Apple-II archive to /Prince-of-Persia-Apple-II.
+If you extracted to a different directory then you will need to substitute the path you used into the steps below.
+
+* Start a "Terminal" console window.  Subsequent steps will be performed from within this terminal.
+* {{{cd /Prince-of-Persia-Apple-II}}}
+* {{{make clean all}}}
+
+This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+
+**Note:** This repository only includes 32-bit Intel tool binaries.  If you are running a 64-bit version of Intel Linux
+          then you may need to install the 32-bit support libraries.  This problem typically shows up as a file not
+          found error when you attempt to run tools such as snap and crackle.  On Ubuntu, the necessary libraries can
+          be installed by running {{{sudo apt-get install ia32-libs}}}
+
+//Tested on: Ubuntu 8.10, and Ubuntu 12.04//
+
+
+==Important Notes!
+There are some important things to note about the current state of this build system:
+* The output disk image won't work on the Apple IIGS.  The Prince of Persia sources use 65802 instructions in some
+  Apple  IIGS specific code paths.  This instruction set isn't supported in the current assembler.  This will be
+  corrected in the near future.
+* Only a 3.5" disk image is created at this point.  The github repository doesn't contain the RW18 code required for
+  5.25" disks but it does contain the 3.5" version.  If someone has an original copy of the 5.25" Prince of Persia disk
+  and is able to make a nibble copy of both sides, then I would love to have it.  It would really help me pull together
+  a 5.25" disk support in this build system.
+  
+
+==Make Targets/Variables
+The makefile currently used for building Prince of Persia supports the following targets:
+* **clean -** Delete all build output and setup for clean build.
+* **all -** Assembles all required source files and creates a disk image.
+
+The makefile also responds to the following variables being set in the user's environment or when launching make:
+* **VERBOSE -** Set this to a non-zero value to have each build step output the tool commands issued.
+* **RELEASE_PATCH -** Set this to a non-zero value to apply patches to a few of the assembly language source files to
+                      bring them uptodate with the final released disk.  This option only patches intermediate files
+                      used as part of the build process and leaves the original source files intact.
+
+For example, if you want to perform a clean build with the final release patches applied, you could run:
+{{{
+make clean all RELEASE_PATCH=1
+}}}
+
+
+==More Information
+[[pop-buildnotes.creole | Overview of Build System]]\\
+[[pop-disklayout.creole | Disk Layout]]\\
+[[pop-codereview-diskreads.creole | Code Inspection of Disk Reads]]\\
+[[pop-imagediff.creole | Disk Image Differences]]\\
+[[pop-references.creole | References]]
+
+==Have fun!!

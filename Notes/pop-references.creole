@@ -1,0 +1,7 @@
+== References
+The Making of Prince of Persia - Journals 1985 - 1993 by Jordan Mechner [[http://jordanmechner.com/ebook/]]\\
+Prince of Persia Technical Information by Jordan Mechner [[http://jordanmechner.com/wp-content/uploads/1989/10/popsource009.pdf]]\\
+Apple IIe Technical Reference Manual [[http://www.amazon.com/Apple-IIe-technical-reference-manual/dp/020117720X]]\\
+Apple IIgs Firmware Reference Manual [[http://www.amazon.com/Apple-IIgs-Firmware-Reference-Computer/dp/0201177447]]\\
+Beneath Apple ProDOS [[http://www.amazon.com/Beneath-Apple-Prodos-Don-Worth/dp/0912985054]]\\
+Merlin 8/16 User Manual [[http://www.apple-iigs.info/doc/fichiers/merlin816.pdf]]\\

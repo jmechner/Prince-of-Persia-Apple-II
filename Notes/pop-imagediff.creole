@@ -1,0 +1,262 @@
+== 3.5" Disk Image Differences
+The disk image that I create using my tools to build the Prince of Persia sources and game data produce a disk image
+file that is very similar to existing 3.5" disk images of the final retail disk found on the Asimov site.  I did patch a
+few of the sources to minimize the differences.  These patches include:
+* Updated the date in VERSION.S from 9/7/89 to 2/5/90.  This matches the 3.5" release of the game.
+* Set FinalDisk to a value of 1 in SPECIALK.S to disable cheats as was done in the final release disk.
+* Updated TOPCTRL.S to include a fix which reinitializes the stack pointer when restarting the current level.  I
+  suspect that this is a bug fix made between the time the code on github were snapped and the release of the final
+  disk.
+  
+There are still differences between the two image and I plan to use this page to investigate and document them.
+
+=== Difference Summary
+* My snap assembler doesn't currently support 65802 code used for a few Apple II GS specific code snippets in UNPACK.S 
+  and GRAFIX.S.  The object code for these pieces of code will just have RTS (0x60) instructions inserted instead of the
+  actual expected machine code.  Will be fixed in the future.
+* I changed the layout of the ProDOS file system containing the Prince of Persia boot loader a bit to make it easier to
+  generate with my crackle disk imaging tool.  The index block for the boot loader was moved from block 8 to block 7 so
+  that the contiguous blocks from 8 to 15 could be used for the boot loader (POPBOOT35.S and RW1835.POP.S).  crackle
+  also places the object code from these 2 modules back to back in the disk image while the baseline image had some
+  spacing between these files.  This difference is most likely just due to manual placement being used for the original
+  baseline image and automated tools used in my build setup.
+* When files don't fill all of their allotted space, the padding at the end will be uninitialized data.  My build system
+  currently places zeroes in such areas while the baseline disk has non-deterministic data in these areas.
+* There are several sectors worth of data in the baseline disk image which aren't to be found in the game data files
+  up on github but are loaded into memory by the game code.  I have extracted the following missing data from the
+  baseline disk and use it to build my disk image:
+** MUSIC.SET2 which starts at RW18 1:020:0000
+** STAGE1.SIDEA.DATA which starts at RW18 1:022:0000
+** PRINCESS.SCENE which starts at RW18 1:030:0000
+** MUSIC.SET1 which starts at RW18 1:034:0000
+** VID.STUFF which starts at RW18 2:012:0000
+** STAGE1.SIDEB.DATA which starts at RW18 2:018:0000
+** MUSIC.SET3 which starts at RW18 2:034:0000
+** SUPER.HIRES.DATA which starts at RW18 3:014:0600
+
+
+=== Image Comparison
+I have written a tool to compare my generated disk image with the one from Asimov.  It compares the images sector by
+sector (256 bytes per sector) so that it is easier to track differences back to the 
+[[https://github.com/adamgreen/Prince-of-Persia-Apple-II/blob/adamgr/notes/pop-disklayout.creole|disk layout information]].
+
+==== Matching Sector Format
+When sectors are exactly the same, the tool will generate output like this:
+{{{
+  RW18 1:002:0100  Same
+}}}
+That line is indicating that the data for side 1, track 2, byte offset 0x0100 (second sector in the track) are exactly
+the same between the two disk images.  **Note:** The sides don't really indicate sides of the physical 3.5" disk but
+instead the RW18 format used on 5.25" disks that are then mapped onto the 3.5" disk format.
+
+If the sectors are exactly the same and both contain a full sector of 256 zero bytes, then it will append the 
+{{{- All Zero}}} text.  For example:
+{{{
+  RW18 1:006:1100  Same - All Zero
+}}}
+
+==== Mismatching Sector Format
+When a sector is different between the two disk images, the output will look something like this:
+{{{
+  RW18 1:002:0A00  Different
+    00: 4C 2A EA 4C EC EA 4C 08 L*jLljL.
+    08: EC 4C 1E EC 4C 18 EC 4C lL.lL.lL
+    10: 07 EC 4C 68 EC 4C B0 EC .lLhlL0l
+    18: 4C A2 EC 4C B3 EC 4C C3 L"lL3lLC
+    20: EC 4C E5 EC 4C CB ED 4C lLelLKmL
+        EC 4C F1 EC 4C 6E ED 4C lLqlLnmL
+    28: 33 ED 8D 03 C0 8D 04 C0 3m..@..@
+        13 ED 8D 03 C0 8D 04 C0 .m..@..@
+    30: 85 01 A9 20 85 03 A9 00 ..) ..).
+    38: 85 00 85 02 A9 FE 85 08 ....)~..
+    40: A9 00 85 0A A0 27 A9 78 )... ')x
+    48: 85 04 A9 20 85 05 A5 04 ..) ..%.
+    50: 38 E9 28 85 04 B0 02 C6 8i(..0.F
+    58: 05 A5 04 85 06 A5 05 18 .%...%..
+    60: 69 04 85 07 A5 06 38 E9 i...%.8i
+    68: 80 85 06 B0 02 C6 07 A5 ...0.F.%
+    70: 06 85 02 A5 07 18 69 20 ...%..i 
+    78: 85 03 A5 03 38 E9 04 85 ..%.8i..
+    80: 03 18 90 1A A5 03 C5 07 ....%.E.
+    88: D0 F0 A5 06 C5 04 D0 D4 Pp%.E.PT
+    90: A5 07 C5 05 D0 CE A5 04 %.E.PN%.
+    98: D0 B4 88 10 A9 60 24 0A P4..)`$.
+    A0: 30 3A A2 00 A1 00 85 0B 0:".!...
+    A8: C5 08 D0 21 E6 00 D0 02 E.P!f.P.
+    B0: E6 01 A1 00 85 09 E6 00 f.!...f.
+    B8: D0 02 E6 01 A1 00 85 0B P.f.!...
+    C0: E6 00 D0 02 E6 01 A9 80 f.P.f.).
+    C8: 85 0A 18 90 0F A5 0B 09 .....%..
+    D0: 80 91 02 E6 00 D0 02 E6 ...f.P.f
+    D8: 01 18 90 A8 A5 0B 09 80 ...(%...
+    E0: 91 02 C6 09 D0 9E A9 00 ..F.P.).
+    E8: 85 0A F0 98 85 F1 A9 01 ..p..q).
+    F0: 85 F0 4C F5 EA A9 00 85 .pLuj)..
+    F8: F2 A9 00 85 F3 20 76 EB r)..s vk
+}}}
+
+Let's break down this sector diff and look at what various parts mean.  First we have the sector header:
+{{{
+  RW18 1:002:0A00  Different
+}}}
+This indicates that the sector on side 1, track 2, offset 0x0A00 is different between the two images.
+
+Next we have these lines:
+{{{
+    00: 4C 2A EA 4C EC EA 4C 08 L*.L..L.
+    08: EC 4C 1E EC 4C 18 EC 4C .L..L..L
+    10: 07 EC 4C 68 EC 4C B0 EC ..Lh.L..
+    18: 4C A2 EC 4C B3 EC 4C C3 L..L..L.
+}}}
+The first 32 bytes of this sector are exactly the same between these two disk images.  These 4 lines show what is
+contained in these 32 bytes (8 bytes per line).  
+
+Each line is composed of 3 fields.  The first field indicates the offset within the 256-byte sector.  It will ascend
+from 0x00 to 0xF8.
+{{{
+    00:
+}}}
+
+The second field shows the contents of each byte in hexadecimal format.
+{{{
+        4C 2A EA 4C EC EA 4C 08
+}}}
+
+The third field shows the same 8 bytes in ASCII format.  A '.' character is used when the byte doesn't represent a
+printable character such as control characters.
+{{{
+                                L*.L..L.
+}}}
+
+The next line of output for this sector is showing where some of the differences actually occur:
+{{{
+    20: EC 4C E5 EC 4C CB ED 4C lLelLKmL
+        EC 4C F1 EC 4C 6E ED 4C lLqlLnmL
+}}}
+The first line shows the data contained in the Asimov baseline image and the second line shows the data from the image
+that I built.  In this particular example, the bytes at offsets 0x20, 0x21, 0x23, 0x24, 0x26, and 0x27 are the same in
+both images and contain the bytes values: 0xEC 0x4C 0xEC 0x4C, 0xED, and 0x4C.  The bytes at offsets 0x22 and 0x25 are
+different between the two images.  The Asimov baseline has byte values 0xE5 and 0xCB for these offsets.  My generated
+image has values of 0xF1 and 0x6E for the same offsets.
+
+=== Results
+The results from a run of this tool can be found at
+[[https://github.com/adamgreen/Prince-of-Persia-Apple-II/blob/adamgr/notes/image-diff-3.5.txt]].  The differences
+flagged by this output will now be discussed.
+
+==== RWTS16 1:002:0000
+This block contains the beginning of the root volume directory for the ProDOS file system.  I purposely made
+modifications to this part of the disk.  My version can be found in **PRODOS.VOLUME**.  I moved the index block for the
+PRODOS system file from block 8 to block 7.  This allows me to use the contiguous space from blocks 8 to 15 for this
+file which will contain the Prince of Persia boot loader from POPBOOT35.S and RW1835.POP.S 
+
+==== RWTS16 1:007:0000 to RWTS16 1:012:0000
+These blocks are different because of my movement of the index block for the Prince of Persia boot loader file from
+block 8 to block 7.  I also place the object file output for POPBOOT35.S and RW1835.POP.S together while the baseline
+image had some spacing between the assembled output of these two files.  My guess is that a more manual process might
+have been used for building the original baseline image and extra room was left between these two files so that
+POPBOOT35.S could change size without requiring RW1835.POP.S's output to be moved around all the time to match.
+**Note:** These deltas aren't without risk.  It could be hiding bugs in the snap assembler output for these two source
+files.
+
+==== RW18 1:000:0000 to RW18 1:000:1100
+On the 5.25" disk, track 0 would have contained the Prince of Persia boot loader files, including the RW18 disk routines
+required to read the data on the rest of the tracks.  I haven't found any source code which references files in this
+location after the boot loading process so I have left it uninitialized.
+
+**Note:** This track does closely match the contents of the IMG.BGTAB1.PAL image table.  Maybe it got stored here by
+mistake on side 1 in addition to side 2 when the disk was originally authored.
+
+==== RW18 1:001:1100 - MASTER.S
+Only the padding bytes between the end of the MASTER.S object file and the end of the sector are different.
+
+==== RW18 1:002:0A00 to RW18 1:002:0D00 - UNPACK.S
+These differences are actually caused by a current shortcoming in my snap assembler.  I don't support non-65c02 
+instructions so the Apple II GS related code towards the end of this source file assembles differently.  The current
+snap assembler just spits out RTS instructions (0x60) in this area of the object file.  There could be a bug hidden in 
+the LOADSUPER code but I checked its LST file contents and it appears to match the machine code from the original
+image other than absolute addresses that were affected by my non-65c02 RTS hack.
+
+==== RW18 1:004:0900 - GRAFIX.S
+Also caused by snap not supporting 65802 instructions.
+
+==== RW18 1:004:1100 - TOPCTRL.S
+Only the padding bytes between the end of the TOPCTRL.S object file and the end of the sector are different.
+
+==== RW18 1:005:0000 and RW18 1:006:1000 - IMG.BGTAB1.DUN
+The first byte which indicates the number of entries in this image table is 0 in the baseline image and 0x7F in the
+version on github.  The 0x7F seems more correct to me so I have maintained this difference and hope that it causes no
+issues during game play.
+
+The padding bytes between the end of this image table and the end of the sector are different as well.
+
+==== RW18 1:008:1100 - IMG.CHTAB1
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:010:1000 - IMG.CHTAB2
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:012:0500 - IMG.CHTAB3
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:013:0B00 - IMG.CHTAB5
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:014:0E00 - IMG.CHTAB4.GD
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:017:0600 to RW18 1:017:0700 - GAMEBG.S
+Only the padding bytes between the end of the GAMEBG.S object file and the end of the allocated sectors are different.
+
+==== RW18 1:018:0D00 - IMG.BGTAB2.DUN
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:019:0F00 to RW18 1:019:1100- SPECIALK.S & VERSION.S
+Only the padding bytes between the end of the SPECIALK.S and VERSION.S object files and the end of the allocated sectors
+are different.
+
+==== RW18 1:020:0D00 - SUBS.S
+Only the padding bytes between the end of the SUBS.S object file and the end of the allocated sectors are different.
+
+==== RW18 1:028:1100 - IMG.CHTAB7
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 1:030:1100 - IMG.CHTAB6.A
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:001:1100 - IMG.BGTAB1.PAL
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:002:1100 - IMG.BGTAB2.PAL
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:003:1100 - IMG.CHTAB4.SKEL
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:005:0800 - IMG.CHTAB4.GD
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:006:0E00 - IMG.CHTAB4.FAT
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:008:1000 - IMG.BGTAB1.DUN
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:009:0D00 - IMG.BGTAB2.DUN
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:011:0100 - IMG.CHTAB4.SHAD
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:017:0000 to RW18 2:017:1100
+**I didn't find anywhere in the code which reads in this track so I haven't initialized it.**
+
+==== RW18 2:023:0000 - Saved Game Data
+There is actually a saved game stored on the baseline disk image at this location.  I haven't initialized this sector in
+my image.
+
+==== RW18 2:025:0D00 - IMG.CHTAB6.B
+The padding bytes between the end of this image table and the end of the sector are different.
+
+==== RW18 2:026:0000 to RW18 2:027:0700
+**I didn't find anywhere in the code which reads in these sectors so I haven't initialized them.**

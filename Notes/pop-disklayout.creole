@@ -11,11 +11,10 @@ tracks.  I then noticed interesting lines at the end of many modules such as thi
 }}}
 
 It turns out that this causes the Merlin assembler to execute a user routine that has been registered on the developer's
-machine.  In this case, it calls into the RW18 code to place the resulting binary at the specified location on the disk.
-
-The code for this is found in 
-[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/04%20Support/MakeDisk/USR18.S | 04 Support/MakeDisk/USR18.S]]
-and the following comment (line 16) gives a pretty good idea of what the parameters mean:
+machine.  In the case of Prince of Persia, it calls into the RW18 code to place the resulting binary at the specified
+location on the disk. The code for this RW18 resident code is found in 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/04%20Support/MakeDisk/USR18.S#L16 | 04 Support/MakeDisk/USR18.S]]
+and the following comment gives a pretty good idea of what the parameters mean:
 {{{
 * usr <BbundID>,<track>,<byte offset 0-$11FF>,<byte length>
 }}}
@@ -27,10 +26,10 @@ POPside2 = $ad
 POPside3 = $79
 }}}
 
-The allowed bytes offset range would indicate that there are 18 256-byte pages per track which agree with the name of
+The allowed bytes offset range would indicate that there are 18 256-byte pages per track which agrees with the name of
 the routines: RW18.
 
-Here is a list of the usr clauses from the POP sources sorted by location:
+Here is a list of the USR clauses from the POP sources sorted by location:
 {{{
 01 POP Source/Source/HIRES.S:2129:    usr $a9,1,$0000,*-org
 01 POP Source/Source/MASTER.S:1446:   usr $a9,1,$a80,*-org
@@ -62,9 +61,9 @@ the source code checked into the git repository.  Through a lot of work it is po
 from disk is loaded into memory and then try to determine what data file was loaded into this location by looking at
 what code later references this location in memory.  I started with this approach but found it too time consuming and a
 bit error prone.  In the end I took an existing 3.5" disk image and compared the bytes in the image to the game data
-files found in the git repository.  The result of the program which ran this comparison was a map showing where each
-game data file was located on the shipping game disk.  It also helped me to see initialized portions of the disk which
-didn't match any of data files in the git repository.
+files found in the git repository.  The result of this comparison was a map showing where each game data file was
+located on the released game disk.  It also helped me to see initialized portions of the disk which didn't match any of
+the data files in the git repository.
 
 
 ===3.5" First 16 Blocks
@@ -95,10 +94,10 @@ found in the Volume Directory on that image:
 * Volume bitmap starts in block 6.
 * There are a total of 0x0640 = 1600 blocks on this 3.5" disk.
 * First and only file entry:
-** Is a sapling (2 - 256 blocks) and has 6 chars in name: "PRODOS"
+** Is a sapling (2 - 256 blocks) and has 6 characters in the filename: "PRODOS"
 ** File type of 0xFF means it is a System ProDOS file.
 ** Index block for this sapling file is at block 8 or offset 0x1000.
-** Uses up 9 blocks (including the index block so 8 blocks of data.)
+** Uses up 9 blocks (including the index block so 8 blocks of actual data.)
 ** File is 0x001000 = 4k bytes in length
 ** Creation date is 0x76 0xB4 0x08 0x0B
 *** Year = 101 1010 = 0x5A = 90
@@ -108,7 +107,10 @@ found in the Volume Directory on that image:
 ** Aux_Type = 0x00 0x00
 ** Modified date is 0x76 0xB4 0x3A 0x0F
 
-The single **PRODOS** file on this disk contains the binary assembled 6502 code for POPBOOT35.S and the RW1835.POP.S.
+The single **PRODOS** file on this disk contains the assembled 6502 code for 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/POPBOOT35.S | POPBOOT35.S]]
+and the 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/RW1835.POP.S | RW1835.POP.S]].
 The ProDOS bootloader will load the contents of this system file into memory starting at address **0x2000**.
 
 On the original disk the sapling index block for this file was located at block 8 and pointed to blocks 7 and 9 - 15

@@ -1,0 +1,85 @@
+== Build Overview
+My goals for the initial build system:
+* I want to be able to build the Prince of Persia (PoP) source code to create disk images suitable for running on 
+  Apple II hardware/emulators.  Why?  Why not?  It definitely feels like the right thing to do and its fun.  Seeing this
+  historical code transformed into running binaries on my own machine just seems magical.
+* I want to be able to build these sources without having to modify them in any way.  They are historical artifacts and
+  me modifying them to get them to build would diminish their historical accuracy.  In an ideal world, my build changes
+  could be pulled back into the main github repository and leave Jordan Mechner's original code intact.
+* Should build on current desktop/laptop machines so that the community can take advantage of newer hardware and
+  software tools to analyze and customize the PoP sources as part of the learning process.  This means I will be
+  initially targeting desktop operating systems to which I personally have access: Windows 7, OS X Lion, and Ubuntu 12.
+* Require minimal tool installation on the user's machine.  I want a minimal set of build tools that will work on the
+  above listed operating systems and just include them in the git repository with the sources.  This is one of the
+  reasons why I decided to write my build tools in the C programming language.  This way it doesn't require the user to
+  install any interpreters or virtual machines on their machine before they can attempt to build the sources.  I will
+  admit that another big reason why the tools were written in C i due to the fact that this is the language with which
+  I am the most familiar.  I hope that people in the end can just pull down the repository and run {{{make}}} to build
+  PoP for themselves.
+
+
+== Build Tools
+The build process will be driven by a makefile that can be processed by GNU make.  I have included a copy of this binary
+in the git repository for the supported operating systems which don't include this tool with the default install.
+
+I created two more custom tools to aid in the build process.  These tools are named **snap** and **crackle**.  
+**snap** is a 6502 assembler that is compatible with the version of Glen Bredon's Merlin 8 assembler used to originally
+assemble the Prince of Persia sources.  **crackle** is able to take the output from the assembly process and data files 
+(game levels, character animations, etc.) to produce a disk image.  Most of the assembly language source code for PoP
+makes use of the {{{USR}}} Merlin directive which used a memory resident copy of the RW18 routines to write the machine
+code out to diskette in the correct track/sector location.  **snap** will create a special object file  when it
+encounters these directives and they can be used as input to **crackle**.
+
+==5.25" or 3.5" Disk Image
+Which type of disk image should I try to make?  Originally I started out thinking that I would want to create a 5.25"
+disk image since it would work on the largest set of actual Apple II hardware.  Based on what I had read on the
+Internet, I figured that a .nib image had the highest probability of being able to represent a disk image that would
+preserve the unique RW18 format used by Prince of Persia for most of its data.  I went out and read about the low level
+disk format from the **Beneath ProDOS** book to allow me to assemble the BOOT.S source file, place it in a nibble image
+and then boot from it.  Then I went to look at the RW18 routines to figure out what would have to be modified to create
+a .nib file that could support this format as well.  That is when I discovered that the RW18 disk routines found in the
+git repository didn't support 5.25" disks but instead it was just a mapping layer that mapped RW18 routine calls to
+SmartPort drivers calls for a 3.5" Unidisk device.  There is no special encoding used in this path.
+
+At this point I switched gears and started working to create a 3.5" disk image instead.  While crackle was generating
+the low level encoding nibble format for the 5.25" disk, for 3.5" disks it only generates a block level image of the
+data itself as would be returned from the SmartPort device.  Once crackle supported such block level images, I could
+start concentrating on the assembly of the POPBOOT35.S and RW1835.POP.S and getting to them to run under emulation.  
+
+In the future, I hope to get a nibble dump of the actual 5.25" version of Prince Of Persia and analyze it and its RW18
+routines on track 0.  This should let me generate and verify a 5.25" disk image as well.
+
+
+==Additional Directories
+When implementing this build support, I did add a few directories to the repository.  These include:
+* **Build** - Includes platform specific binaries such as snap, crackle, and make required to build the PoP code.
+* **Notes** - Includes additional notes such as this.
+* **Other** - Includes files required by the build process which weren't part of the originally extracted files from
+              Jordan Mechner's disks.
+** **PrinceOfPersia_3.5.layout** - The disk layout script used by my crackle utility to tell it which executable
+                                   object files should be placed on the disk and where each game data file should be
+                                   located.
+** **PRODOS.VOLUME** - This contains the first 16 ProDOS blocks of the 3.5" disk image, including the volume and root
+                       directory descriptions.
+** **POP.SIGNATURE** - This contains the Prince of Persia signature string which is placed between virtual sides 1 and
+                       2 of the 3.5" disk image.  The game will fail to start and ask the user to insert the PoP disk if
+                       this string isn't found at the expected disk location.
+** **TOPCTRL.PATCH** - Contains a patch to TOPCTRL.S which the final release disk appears to have.  This fix resets the
+                       6502 stack pointer to $ff when restarting the current game level.
+** **SPECIALK.PATCH** - Contains a patch to SPECIALK.PATCH which sets the FinalDisk symbol to 1 so that not all of the
+                        cheats are available in the final game disk image.
+** **VERSION.PATCH** - Contains a patch to VERSION.S which updates the date stamp from 9/7/89 to 2/5/90, as found on the
+                       final released 3.5" disk image.
+** **MUSIC.SET1** - Music file extracted from final 3.5" disk image as not found in repository.
+** **MUSIC.SET2** - Music file extracted from final 3.5" disk image as not found in repository.
+** **MUSIC.SET3** - Music file extracted from final 3.5" disk image as not found in repository.
+** **STAGE1.SIDEA.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
+                           packed static images required for levels on side 1.
+** **STAGE1.SIDEB.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
+                           packed static images required for levels on side 2.
+** **PRINCESS.SCENE** - Extracted from final 3.5" disk image as not found in repository.  It contains the packed static
+                        images required for attract mode scene where the Princess is in the palace.
+** **VID.STUFF** - Extracted from final 3.5" disk image as not found in repository.
+** **SUPER.HIRES.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
+                          unpacked static super hi-res images that can be displayed at the game's finale on Apple II GS
+                          machines.
