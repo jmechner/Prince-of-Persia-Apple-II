@@ -1,7 +1,7 @@
 ==Quick Start
 These are the quick steps to download and build the Prince of Persia sources to create an Apple II disk image:
 * Download the Prince-of-Persia-Apple-II compressed archive from 
-  [[https://github.com/adamgreen/Prince-of-Persia-Apple-II/archive/working.zip]]
+  [[https://github.com/adamgreen/Prince-of-Persia-Apple-II/archive/build.zip]]
 * Decompress and extract the contents of this archive.
 * Follow the steps appropriate for your platform to complete your first build:
 
