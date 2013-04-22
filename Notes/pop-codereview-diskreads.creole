@@ -594,7 +594,7 @@ loadch7
 }}}
 
 Reads in tracks 29-31 and 9 sectors from track 32 on side 1 into memory.  This loads the IMG.CHTAB6.A and
-PRINCESS.SCENE files.
+PRINCESS.SIDEA.SCENE files.
 
 Reads in the last 5 sectors of track 28.  This loads the IMG.CHTAB7 file into memory.
 
@@ -613,7 +613,7 @@ LoadStage2B
  bne ]ls2
 }}}
 This will call back into the above ]ls2 routine to load tracks 24-26 and 9 sectors from track 27 on side 2.  This loads
-the IMG.CHTAB6.B file into memory.
+the IMG.CHTAB6.B and PRINCESS.SIDEB.SCENE files.
 
 
 [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1308 | MASTER.S:1308]]
