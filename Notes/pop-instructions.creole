@@ -1,0 +1,76 @@
+==Prince of Persia Gameplay Instructions
+This document provides an overview of how to play Prince of Persia.
+
+
+==Player Control - Joystick
+The game defaults to joystick gameplay mode.  It can also be forced into joystick gameplay mode by pressing CTRL+J.
+Pressing CTRL+J will also re-calibrate your joystick so make sure that the stick is centered when pressing this key
+combination.
+
+|= Desired Action         |= Joystick Action |
+| Run                     | Hold stick to left or right |
+| Stop                    | Allow stick to return to center position |
+| Careful steps           | Hold button down while pushing stick left or right |
+| Jump up                 | Push stick straight up |
+| Jump forward            | Push stick to upper left or upper right |
+| Running jump            | Hold stick to left or right to run and then push stick to upper left or right.  Timing is important. |
+| Climb up                | Push stick straight up when directly under ledge |
+| Hang from ledge         | Hold button down |
+| Drop from hang          | Release button |
+| Grab ledge during fall  | Press button when falling close to ledge |
+| Climb down              | Careful step to edge, turn around, and then press stick down |
+| Duck                    | Press stick straight down |
+| Pick up object          | Stand in front of object and press button |
+| Pull out sword          | Center stick when in presence of opponent |
+| Strike opponent         | Press button |
+| Block opponent's strike | Press stick straight up.  Timing is important. |
+| Put sword away          | Press straight down on the stick |
+
+
+==Player Control - Keyboard
+Press CTRL+K to enter keyboard gameplay mode.
+
+The following table notes which keyboard actions correspond to the joystick motions mentioned in the previous table.
+|= Joystick  |= Keyboard |
+| Left       | J  |
+| Right      | L |
+| Up         | I |
+| Down       | K |
+| Jump Left  | U |
+| Jump Right | O |
+| Button     | Open-Apple or Closed-Apple |
+
+
+==Special Keys
+These keys have special meaning in the Prince of Persia game.
+
+|= Keys |= Description |
+| ESC   | Pause game.  Press any other key to resume. |
+| CTRL+J | Select and calibrate joystick |
+| CTRL+K | Select keyboard gameplay mode |
+| CTRL+R | End game and return to intro |
+| CTRL+A | Restart level |
+| CTRL+S | Toggle sound on/off |
+| CTRL+N | Toggle music on/off |
+| CTRL+G | Save game to disk |
+| CTRL+L | Load game from disk |
+| CTRL+X | Flip vertical axis of joystick |
+| CTRL+Y | Flip horizontal axis of joystick |
+| CTRL+V | Show game version |
+| Space  | Show time left |
+
+
+==Even more Special Keys
+The default build created by this project enables more special keys since cheats are only disabled if you build with
+RELEASE_PATCH=1 to produce a released game disk image.
+
+To enter development mode cheats, you must first type, "POP", without the quotes.  The case shouldn't matter.  You can
+then issue the following cheat commands:
+
+|= Command |= Description |
+| SKIP     | Skip ahead to next level |
+| TINA     | Jump to final level |
+| BOOST    | Boosts your health by 1 |
+| R        | Recharge power meter to maximum |
+| Z        | Take opponent health down to 1 |
+| ZAP      | Kill opponent |
