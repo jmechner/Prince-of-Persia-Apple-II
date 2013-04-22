@@ -65,7 +65,7 @@ The default build created by this project enables more special keys since cheats
 RELEASE_PATCH=1 to produce a released game disk image.
 
 To enter development mode cheats, you must first type, "POP", without the quotes.  The case shouldn't matter.  You can
-then issue the following cheat commands:
+then type the following cheat strings:
 
 |= Command |= Description |
 | SKIP     | Skip ahead to next level |
