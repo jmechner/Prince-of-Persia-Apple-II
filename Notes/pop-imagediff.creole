@@ -257,6 +257,3 @@ my image.
 
 ==== RW18 2:025:0D00 - IMG.CHTAB6.B
 The padding bytes between the end of this image table and the end of the sector are different.
-
-==== RW18 2:026:0000 to RW18 2:027:0700
-**I didn't find anywhere in the code which reads in these sectors so I haven't initialized them.**

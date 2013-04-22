@@ -171,7 +171,7 @@ the following sections.
 | 28/0x0c00 | All Zeroes | N/A |
 | 28/0x0d00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB7 | IMG.CHTAB7]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1283 | MASTER.S:1283]] |
 | 29/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB6.A | IMG.CHTAB6.A]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1250 | MASTER.S:1250]] |
-| 30/0x0000 | PRINCESS.SCENE | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1250 | MASTER.S:1250]] |
+| 30/0x0000 | PRINCESS.SIDEA.SCENE | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1250 | MASTER.S:1250]] |
 | 32/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL2 | LEVEL2]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
 | 33/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL0 | LEVEL0]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
 | 33/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL1 | LEVEL1]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
@@ -200,7 +200,8 @@ the following sections.
 | 18/0x0000 | STAGE1.SIDEB.DATA | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1195 | MASTER.S:1195]] |
 | 23/0x0000 | Saved Game Data | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L421 | MASTER.S:258]] |
 | 24/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB6.B | IMG.CHTAB6.B]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1302 | MASTER.S:1302]] |
-| 26/0x0000 | ** Unknown ** | ??? |
+| 26/0x0000 | PRINCESS.SIDEB.SCENE | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1299 | MASTER.S:1299]] |
+| 27/0x0800 | All Zeroes | N/A |
 | 28/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL13 | LEVEL13]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
 | 28/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL14 | LEVEL14]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
 | 29/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL11 | LEVEL11]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
