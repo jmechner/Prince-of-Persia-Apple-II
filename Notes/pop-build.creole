@@ -80,6 +80,7 @@ make clean all RELEASE_PATCH=1
 
 
 ==More Information
+[[pop-instructions.creole | Instructions on how to play Prince of Persia]]\\
 [[pop-buildnotes.creole | Overview of Build System]]\\
 [[pop-disklayout.creole | Disk Layout]]\\
 [[pop-codereview-diskreads.creole | Code Inspection of Disk Reads]]\\
