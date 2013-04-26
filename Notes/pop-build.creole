@@ -85,6 +85,18 @@ make clean all RELEASE_PATCH=1
 [[pop-disklayout.creole | Disk Layout]]\\
 [[pop-codereview-diskreads.creole | Code Inspection of Disk Reads]]\\
 [[pop-imagediff.creole | Disk Image Differences]]\\
+[[pop-codereview-rw18.creole | Overview of RW18 Disk Format]]\\
 [[pop-references.creole | References]]
+
+
+==Thanks!
+Thanks to Jordan Mechner for bringing Prince of Persia to life in the first place.\\
+Thanks to Roland Gustafsson for the RW18 disk routines that packed Prince of Persia onto a single double sided 5.25"
+floppy disk.\\
+Thanks to Jordan Mechner, Jason Scott, and Tony Diaz for extracting the source code and making it available here on
+github for hackers like us to play with.\\
+Thanks for the valuable feedback from sethwoodworth, textfiles, BLuRry, and MEtalGuy66.\\
+Thanks to Antoine and Godfather for providing valuable RW18 pointers.\\
+
 
 ==Have fun!!
