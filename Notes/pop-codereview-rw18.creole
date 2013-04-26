@@ -1,0 +1,180 @@
+==Disk Format
+The Prince of Persia source code utilizes RW18 routines for its disk accesses.  The 3.5" version of these routines
+are included in Jordan Mechner's github repository but the 5.25" version are not.  To make it possible to build 5.25"
+disk images for this game, I need the RW18 routines for that media type and the ability to create RW18 5.25" disk images
+in crackle.  I would really like to get a nibble copy of the original 5.25" Prince of Persia disks to enable the
+creation of a more historically accurate image but I haven't been successful in obtaining it yet.  Lacking such a copy,
+I am instead using a dump of the RW18 code from another game to learn more about the RW18 disk format.  This
+documentation provides an overview of what I have learned so far.
+
+===Tracks
+There are **35 tracks** on a disk formatted for RW18, just like there are for a normally formatted Apple II disk.  On
+the Prince of Persia disk the first track is configured to use the DOS 3.3 16 sectors per track format.  This track
+contains the first stage bootloader for the game.  It also contains the core RW18 routines used to read in the data from
+the rest of the disk.
+
+===Sectors
+A RW18 track contains 6 sectors per track.  While a sector on a standard DOS 3.3 disk would contain one 256 byte page of
+data, a sector on a RW18 disk contains 3 pages worth of data.  The total capacity of a RW18 track
+is therefore **6 sectors/track x 3 pages/sector x 256 bytes/page = 4608 bytes/track**.
+
+===Encoding
+Data in RW18 tracks is encoded using a 6 to 8 bit encoding scheme.  I won't discuss this encoding scheme in much detail
+since there are other documents on the web related to DOS 3.3 and ProDOS which describe this same 6to8 encoding scheme.
+The following 64 element lookup table does provide an overview of how to convert 6-bit values to the 8-bit format which
+is placed on the disk.
+
+|= 6-bit Value |= 8-bit Encoding |
+| $00 | $96 |
+| $01 | $97 |
+| $02 | $9a |
+| $03 | $9b |
+| $04 | $9d |
+| $05 | $9e |
+| $06 | $9f |
+| $07 | $a6 |
+| $08 | $a7 |
+| $09 | $ab |
+| $0a | $ac |
+| $0b | $ad |
+| $0c | $ae |
+| $0d | $af |
+| $0e | $b2 |
+| $0f | $b3 |
+| $10 | $b4 |
+| $11 | $b5 |
+| $12 | $b6 |
+| $13 | $b7 |
+| $14 | $b9 |
+| $15 | $ba |
+| $16 | $bb |
+| $17 | $bc |
+| $18 | $bd |
+| $19 | $be |
+| $1a | $bf |
+| $1b | $cb |
+| $1c | $cd |
+| $1d | $ce |
+| $1e | $cf |
+| $1f | $d3 |
+| $20 | $d6 |
+| $21 | $d7 |
+| $22 | $d9 |
+| $23 | $da |
+| $24 | $db |
+| $25 | $dc |
+| $26 | $dd |
+| $27 | $de |
+| $28 | $df |
+| $29 | $e5 |
+| $2a | $e6 |
+| $2b | $e7 |
+| $2c | $e9 |
+| $2d | $ea |
+| $2e | $eb |
+| $2f | $ec |
+| $30 | $ed |
+| $31 | $ee |
+| $32 | $ef |
+| $33 | $f2 |
+| $34 | $f3 |
+| $35 | $f4 |
+| $36 | $f5 |
+| $37 | $f6 |
+| $38 | $f7 |
+| $39 | $f9 |
+| $3a | $fa |
+| $3b | $fb |
+| $3c | $fc |
+| $3d | $fd |
+| $3e | $fe |
+| $3f | $ff |
+
+For example, if you wanted to encode the 6-bit value of $1b, then it would be placed on the disk as $cb.  The RW18
+code contains a hardcoded copy of this 64 element table.  On the first call made to RW18, it will run through an
+initialization phase.  Part of this initialization will be to walk through this table and generate an inverse table in
+memory that can take an 8-bit encoded byte from disk and return the original 6-bit value.
+
+===Sector Ordering           
+A track contains a total of 18 pages.  There are 3 pages of data contained within each sector.  The pages found within
+each sector are not sequential but instead are interleaved as shown in this table:
+|= Sector Number |= Pages Contained |
+| 0              | 0, 6, 12 |
+| 1              | 1, 7, 13 |
+| 2              | 2, 8, 14 |
+| 3              | 3, 9, 15 |
+| 4              | 4, 10, 16 |
+| 5              | 5, 11, 17 |
+
+The sectors are stored in the track in reverse order (i.e. the first sector written for a track is sector 5 and the last
+is sector 0).
+
+===Sector Format
+The following table shows the bytes that make up a sector on a RW18 disk.  Remember that there will be 6 of these per
+track.
+
+|= Start Offset |= End Offset |= Value      |= Description |
+| $000          | $001        | **$d5,$9d** | Address Field Prolog |
+| $002          | $002        | tt          | Track (0 - 34) |
+| $003          | $003        | ss          | Sector (0 - 5) |
+| $004          | $004        | cc          | Checksum (cc = tt XOR ss) |
+| $005          | $005        | **$aa**     | Address Field Epilog |
+| $006          | $007        | **$ff,$ff** | Sync Nibbles |
+| $008          | $008        | **xx**      | Side Id (PoP side1 = $a9 and side2 = $ad) |
+| $009          | $408        | nn,nn,...   | 1024 bytes of encoded data.  See description below |
+| $409          | $409        | cc          | XOR checksum of previous 1024 bytes |
+| $40A          | $40B        | **$d4,$ff**     | Data Field Epilog |
+**Notes:** Bold values in the above table are placed on the disk as shown.  Values in normal type face are placed on the
+           disk after 6to8 encoding.
+
+===Sector Data Ordering
+The data for the 3 pages to be stored in a particular sector are converted from a stream of 768 (3x256) 8-bit bytes to a
+stream of 1024 (768/3x4) 6-bit values to be encoded onto the disk.  The easiest way to describe this conversion is to
+walk through an example.  Lets assume that we want to encode the 3 pages for sector number 0.  This means that we are
+trying to encode the data for pages 0, 6, and 12.  Let's break down the first 8 bits for each of these pages and apply
+labels:
+
+| Page0:   | B//0-7// | B//0-6// | B//0-5// | B//0-4// | B//0-3// | B//0-2// | B//0-1// | B//0-0// |
+| Page6:   | B//6-7// | B//6-6// | B//6-5// | B//6-4// | B//6-3// | B//6-2// | B//6-1// | B//6-0// |
+| Page12:  | B//12-7// | B//12-6// | B//12-5// | B//12-4// | B//12-3// | B//12-2// | B//12-1// | B//12-0// |
+
+In the above example, B//0-7// indicates the most significant bit of the first byte from Page0 and B//12-0// indicates
+the least significant bit of the first byte from Page12.
+
+If the first byte of each of these 3 pages were:
+
+**Page0:** $00 \\
+**Page6:** $aa \\
+**Page12:** $ff
+
+Then the above table would look like this:
+| Page0:   | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Page6:   | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 |
+| Page12:  | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+
+These 3 bytes need to be converted to four 6-bit values that can be 6to8 encoded.  The upper 2 bits from the 3 bytes
+will be placed in an auxiliary byte (Value0 in tables below) and then the remaining 6-bits from each of the 3 bytes will
+be used.  The first 4 values encoded in the sector data would contain these bits:
+
+| Value0: | B//0-7// | B//0-6// | B//6-7// | B//6-6// | B//12-7// | B//12-6// |
+| Value1: | B//0-5// | B//0-4// | B//0-3// | B//0-2// | B//0-1// | B//0-0// |
+| Value2: | B//6-5// | B//6-4// | B//6-3// | B//6-2// | B//6-1// | B//6-0// |
+| Value3: | B//12-5// | B//12-4// | B//12-3// | B//12-2// | B//12-1// | B//12-0// |
+
+In our example, this table would end up looking like this for the first 4 values to be encoded to disk:
+| Value0: | 0 | 0 | 1 | 0 | 1 | 1 |
+| Value1: | 0 | 0 | 0 | 0 | 0 | 0 |
+| Value2: | 1 | 0 | 1 | 0 | 1|  0 |
+| Value3: | 1 | 1 | 1 | 1 | 1 | 1 |
+
+This process is then performed 255 more times to cover all of the data for this sector.
+
+These 1024 6-bit values are all XOR'ed together before they are encoded and the resulting 6-bit checksum is encoded and
+placed on the disk as well.
+
+===Sector Padding
+Sector 5 has 12 extra padding bytes inserted before its address field.  This padding consists 
+of: **$a5,$96,$bf,$ff,$fe,$aa,$bb,$aa,$aa,$ff,$ef,$9a**
+
+Each sector is also preceded by SYNC bytes (value of $ff).  Sector 5 has 201 SYNC bytes and the rest of the sectors have
+5 SYNC bytes.
