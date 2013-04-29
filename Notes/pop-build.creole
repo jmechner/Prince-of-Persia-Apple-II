@@ -82,6 +82,8 @@ make clean all RELEASE_PATCH=1
 ==More Information
 [[pop-instructions.creole | Instructions on how to play Prince of Persia]]\\
 [[pop-buildnotes.creole | Overview of Build System]]\\
+[[https://github.com/adamgreen/snapNcrackle/blob/master/notes/snap.creole | snap Assembler Documentation]]\\
+[[https://github.com/adamgreen/snapNcrackle/blob/master/notes/crackle.creole | crackle Disk Imaging Utility Documentation]]\\
 [[pop-disklayout.creole | Disk Layout]]\\
 [[pop-codereview-diskreads.creole | Code Inspection of Disk Reads]]\\
 [[pop-imagediff.creole | Disk Image Differences]]\\
