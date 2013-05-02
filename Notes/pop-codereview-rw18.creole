@@ -123,7 +123,7 @@ track.
 | $008          | $008        | **xx**      | Side Id (PoP side1 = $a9 and side2 = $ad) |
 | $009          | $408        | nn,nn,...   | 1024 bytes of encoded data.  See description below |
 | $409          | $409        | cc          | XOR checksum of previous 1024 bytes |
-| $40A          | $40B        | **$d4,$ff**     | Data Field Epilog |
+| $40A          | $40B        | **$d4,$ff** | Data Field Epilog |
 **Notes:** Bold values in the above table are placed on the disk as shown.  Values in normal type face are placed on the
            disk after 6to8 encoding.
 

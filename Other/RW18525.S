@@ -9,7 +9,7 @@
 *  by Adam Green
 *
 *-------------------------------------------------
-        org $4e00
+        org $D000
 
 *-------------------------------------------------
 * Game code will jsr to this entry point when it

@@ -91,6 +91,8 @@ OUTPUT_DIR=obj
 # Assembly Language source to be built.
 OBJECTS =$(OUTPUT_DIR)/popboot35
 OBJECTS+=$(OUTPUT_DIR)/rw1835.pop
+OBJECTS+=$(OUTPUT_DIR)/BOOT
+OBJECTS+=$(OUTPUT_DIR)/RW18525
 OBJECTS+=$(OUTPUT_DIR)/AUTO
 OBJECTS+=$(OUTPUT_DIR)/CTRLSUBS
 OBJECTS+=$(OUTPUT_DIR)/COLL
@@ -138,21 +140,26 @@ GAME_DATA=$(wildcard $(IMAGE_TABLES)/* $(LEVELS)/* $(OTHER_FILES)/*)
 
 # Disk layout description for where contents should be laid out on disk.
 DISK_35_LAYOUT=$(OTHER_FILES)/PrinceOfPersia_3.5.layout
+DISK_525A_LAYOUT=$(OTHER_FILES)/PrinceOfPersia_5.25_SideA.layout
+DISK_525B_LAYOUT=$(OTHER_FILES)/PrinceOfPersia_5.25_SideB.layout
 
 
-# Final disk image to be created.
+# Final disk images to be created.
 DISK_35_IMAGE=PrinceOfPersia_3.5.hdv
+DISK_525A_IMAGE=PrinceOfPersia_5.25_SideA.nib
+DISK_525B_IMAGE=PrinceOfPersia_5.25_SideB.nib
 
 
 # Flags to pass into build tools.
 ASM_FLAGS=--putdirs $(call convert-slash,./01_POP_Source/Source) --outdir $(call convert-slash,$(OUTPUT_DIR))
 IMAGER_35_FLAGS=--format hdv_3.5
+IMAGER_525_FLAGS=--format nib_5.25
 
 
 # Main build rules.
 .PHONY : all clean
 
-all: $(OUTPUT_DIR) $(OBJECTS) $(DISK_35_IMAGE)
+all: $(OUTPUT_DIR) $(OBJECTS) $(DISK_35_IMAGE) $(DISK_525A_IMAGE) $(DISK_525B_IMAGE)
 
 $(OUTPUT_DIR) :
 	$(Q) $(MKDIR) $(call convert-slash,$@) $(QUIET)
@@ -160,6 +167,14 @@ $(OUTPUT_DIR) :
 $(DISK_35_IMAGE) : $(OBJECTS) $(GAME_DATA) Makefile
 	@echo Creating disk image $@
 	$(Q) $(IMAGER) $(IMAGER_35_FLAGS) $(call convert-slash,$(DISK_35_LAYOUT)) $@
+
+$(DISK_525A_IMAGE) : $(OBJECTS) $(GAME_DATA) Makefile
+	@echo Creating disk image $@
+	$(Q) $(IMAGER) $(IMAGER_525_FLAGS) $(call convert-slash,$(DISK_525A_LAYOUT)) $@
+
+$(DISK_525B_IMAGE) : $(OBJECTS) $(GAME_DATA) Makefile
+	@echo Creating disk image $@
+	$(Q) $(IMAGER) $(IMAGER_525_FLAGS) $(call convert-slash,$(DISK_525B_LAYOUT)) $@
 
 clean:
 	@echo Cleaning project
@@ -177,6 +192,10 @@ $(OUTPUT_DIR)/rw1835.pop : $(DISK_ROUTINES)/RW1835.POP.S Makefile
 	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 $(OUTPUT_DIR)/% : $(GAME_SOURCES)/%.S Makefile
+	@echo Assembling $<
+	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+
+$(OUTPUT_DIR)/% : $(OTHER_FILES)/%.S Makefile
 	@echo Assembling $<
 	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
