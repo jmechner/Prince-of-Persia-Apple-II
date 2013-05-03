@@ -89,6 +89,8 @@ OUTPUT_DIR=obj
 
 
 # Assembly Language source to be built.
+# NOTE: Use lower case and special rules for SAV'ed files which produce lower
+# case object filenames so that incremental builds work properly on Linux.
 OBJECTS =$(OUTPUT_DIR)/popboot35
 OBJECTS+=$(OUTPUT_DIR)/rw1835.pop
 OBJECTS+=$(OUTPUT_DIR)/boot
