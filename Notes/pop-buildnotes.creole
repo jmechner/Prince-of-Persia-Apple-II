@@ -46,8 +46,10 @@ the low level encoding nibble format for the 5.25" disk, for 3.5" disks it only 
 data itself as would be returned from the SmartPort device.  Once crackle supported such block level images, I could
 start concentrating on the assembly of the POPBOOT35.S and RW1835.POP.S and getting to them to run under emulation.  
 
-In the future, I hope to get a nibble dump of the actual 5.25" version of Prince Of Persia and analyze it and its RW18
-routines on track 0.  This should let me generate and verify a 5.25" disk image as well.
+I now have a 5.25" version of the RW18 routines obtained by analyzing RW18 routines from another game.  This source
+code is now checked into the tree under the Other/ subdirectory.  I also updated my crackle disk imaging tool to enable
+the creation of RW18 based .nib files.  With these changes, it is now possible to build 5.25" disk images for sides A
+and B of the game disk and run the game from emulators such as Virtual ][ and JACE.
 
 
 ==Additional Directories
@@ -56,30 +58,40 @@ When implementing this build support, I did add a few directories to the reposit
 * **Notes** - Includes additional notes such as this.
 * **Other** - Includes files required by the build process which weren't part of the originally extracted files from
               Jordan Mechner's disks.
-** **PrinceOfPersia_3.5.layout** - The disk layout script used by my crackle utility to tell it which executable
-                                   object files should be placed on the disk and where each game data file should be
-                                   located.
-** **PRODOS.VOLUME** - This contains the first 16 ProDOS blocks of the 3.5" disk image, including the volume and root
-                       directory descriptions.
-** **POP.SIGNATURE** - This contains the Prince of Persia signature string which is placed between virtual sides 1 and
-                       2 of the 3.5" disk image.  The game will fail to start and ask the user to insert the PoP disk if
-                       this string isn't found at the expected disk location.
-** **TOPCTRL.PATCH** - Contains a patch to TOPCTRL.S which the final release disk appears to have.  This fix resets the
-                       6502 stack pointer to $ff when restarting the current game level.
-** **SPECIALK.PATCH** - Contains a patch to SPECIALK.PATCH which sets the FinalDisk symbol to 1 so that not all of the
-                        cheats are available in the final game disk image.
-** **VERSION.PATCH** - Contains a patch to VERSION.S which updates the date stamp from 9/7/89 to 2/5/90, as found on the
-                       final released 3.5" disk image.
 ** **MUSIC.SET1** - Music file extracted from final 3.5" disk image as not found in repository.
 ** **MUSIC.SET2** - Music file extracted from final 3.5" disk image as not found in repository.
 ** **MUSIC.SET3** - Music file extracted from final 3.5" disk image as not found in repository.
+** **POP.SIGNATURE** - This contains the Prince of Persia signature string which is placed between virtual sides 1 and
+                       2 of the 3.5" disk image.  The game will fail to start and ask the user to insert the PoP disk if
+                       this string isn't found at the expected disk location.
+** **PRINCESS.SIDEA.SCENE** - Extracted from final 3.5" disk image as not found in repository.  It contains the packed
+                              static images required for attract mode scene where the Princess is in the palace.
+** **PRINCESS.SIDEB.SCENE** - Extracted from final 3.5" disk image as not found in repository.  It contains the packed
+                              static images required for attract mode scene where the Princess is in the palace.
+** **PRODOS.VOLUME** - This contains the first 16 ProDOS blocks of the 3.5" disk image, including the volume and root
+                       directory descriptions.
+** **PrinceOfPersia_3.5.layout** - The disk layout script used by my crackle utility to tell it which executable
+                                   object files should be placed on the disk and where each game data file should be
+                                   located on the 3.5" disk.
+** **PrinceOfPersia_5.25_SideA.layout** - The disk layout script used by my crackle utility to tell it which executable
+                                          object files should be placed on the disk and where each game data file should
+                                          be located on side A of the 5.25" disk.
+** **PrinceOfPersia_5.25_SideB.layout** - The disk layout script used by my crackle utility to tell it which executable
+                                          object files should be placed on the disk and where each game data file should
+                                          be located on side B of the 5.25" disk.
+** **RW18525.S** - Source code for 5.25" version of RW18 disk routines based on object code disassembly.  They are not
+                   original sources.
+** **SPECIALK.PATCH** - Contains a patch to SPECIALK.PATCH which sets the FinalDisk symbol to 1 so that not all of the
+                        cheats are available in the final game disk image.
 ** **STAGE1.SIDEA.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
                            packed static images required for levels on side 1.
 ** **STAGE1.SIDEB.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
                            packed static images required for levels on side 2.
-** **PRINCESS.SCENE** - Extracted from final 3.5" disk image as not found in repository.  It contains the packed static
-                        images required for attract mode scene where the Princess is in the palace.
-** **VID.STUFF** - Extracted from final 3.5" disk image as not found in repository.
 ** **SUPER.HIRES.DATA** - Extracted from final 3.5" disk image as not found in repository.  I believe it contains the
                           unpacked static super hi-res images that can be displayed at the game's finale on Apple II GS
                           machines.
+** **TOPCTRL.PATCH** - Contains a patch to TOPCTRL.S which the final release disk appears to have.  This fix resets the
+                       6502 stack pointer to $ff when restarting the current game level.
+** **VERSION.PATCH** - Contains a patch to VERSION.S which updates the date stamp from 9/7/89 to 2/5/90, as found on the
+                       final released 3.5" disk image.
+** **VID.STUFF** - Extracted from final 3.5" disk image as not found in repository.

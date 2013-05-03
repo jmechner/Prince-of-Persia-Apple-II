@@ -15,7 +15,9 @@ If you extracted to a different directory then you will need to substitute the p
 * {{{cd c:\Prince-of-Persia-Apple-II}}}
 * {{{Build\win32\make clean all}}}
 
-This will result in the creation of a c:\Prince-of-Persia-Apple-II\PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+This will result in the creation of a c:\Prince-of-Persia-Apple-II\PrinceOfPersia_3.5.hdv disk image for 3.5" media.\\
+It will also create c:\Prince-of-Persia-Apple-II\PrinceOfPersia_5.25_SideA.nib and 
+c:\Prince-of-Persia-Apple-II\PrinceOfPersia_5.25_SideB.nib disk images for sides A and B of 5.25" media.
 
 //Tested on: Windows 7, and Windows XP//
 
@@ -29,7 +31,9 @@ If you extracted to a different directory then you will need to substitute the p
 * {{{cd /Prince-of-Persia-Apple-II}}}
 * {{{Build/osx32/make clean all}}}
 
-This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.\\
+It will also create /Prince-of-Persia-Apple-II/PrinceOfPersia_5.25_SideA.nib and 
+/Prince-of-Persia-Apple-II/PrinceOfPersia_5.25_SideB.nib disk images for sides A and B of 5.25" media.
 
 //Tested on: Lion, and Snow Leopard//
 
@@ -41,7 +45,9 @@ If you extracted to a different directory then you will need to substitute the p
 * {{{cd /Prince-of-Persia-Apple-II}}}
 * {{{make clean all}}}
 
-This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.
+This will result in the creation of a /Prince-of-Persia-Apple-II/PrinceOfPersia_3.5.hdv disk image for 3.5" media.\\
+It will also create /Prince-of-Persia-Apple-II/PrinceOfPersia_5.25_SideA.nib and 
+/Prince-of-Persia-Apple-II/PrinceOfPersia_5.25_SideB.nib disk images for sides A and B of 5.25" media.
 
 **Note:** This repository only includes 32-bit Intel tool binaries.  If you are running a 64-bit version of Intel Linux
           then you may need to install the 32-bit support libraries.  This problem typically shows up as a file not
@@ -56,10 +62,10 @@ There are some important things to note about the current state of this build sy
 * The output disk image won't work on the Apple IIGS.  The Prince of Persia sources use 65802 instructions in some
   Apple  IIGS specific code paths.  This instruction set isn't supported in the current assembler.  This will be
   corrected in the near future.
-* Only a 3.5" disk image is created at this point.  The github repository doesn't contain the RW18 code required for
-  5.25" disks but it does contain the 3.5" version.  If someone has an original copy of the 5.25" Prince of Persia disk
-  and is able to make a nibble copy of both sides, then I would love to have it.  It would really help me pull together
-  a 5.25" disk support in this build system.
+* When playing from 5.25" disks, you will get the following message when it is necessary to switch sides of the disk,
+  "Insert Prince of Persia Disk".  It should indicate the side of the disk it wants but I have left the code configured
+  to build for 3.5" disks so it displays this message instead.  Turning 3.5" disk support off would turn on 5.25"
+  copy protection and this would cause problems.
   
 
 ==Make Targets/Variables
@@ -82,9 +88,23 @@ make clean all RELEASE_PATCH=1
 ==More Information
 [[pop-instructions.creole | Instructions on how to play Prince of Persia]]\\
 [[pop-buildnotes.creole | Overview of Build System]]\\
+[[https://github.com/adamgreen/snapNcrackle/blob/master/notes/snap.creole | snap Assembler Documentation]]\\
+[[https://github.com/adamgreen/snapNcrackle/blob/master/notes/crackle.creole | crackle Disk Imaging Utility Documentation]]\\
 [[pop-disklayout.creole | Disk Layout]]\\
 [[pop-codereview-diskreads.creole | Code Inspection of Disk Reads]]\\
 [[pop-imagediff.creole | Disk Image Differences]]\\
+[[pop-codereview-rw18.creole | Overview of RW18 Disk Format]]\\
 [[pop-references.creole | References]]
+
+
+==Thanks!
+Thanks to Jordan Mechner for bringing Prince of Persia to life in the first place.\\
+Thanks to Roland Gustafsson for the RW18 disk routines that packed Prince of Persia onto a single double sided 5.25"
+floppy disk.\\
+Thanks to Jordan Mechner, Jason Scott, and Tony Diaz for extracting the source code and making it available here on
+github for hackers like us to play with.\\
+Thanks for the valuable feedback from sethwoodworth, textfiles, BLuRry, and MEtalGuy66.\\
+Thanks to Antoine and Godfather for providing valuable RW18 pointers.\\
+
 
 ==Have fun!!
