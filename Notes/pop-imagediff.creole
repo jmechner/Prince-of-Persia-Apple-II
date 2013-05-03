@@ -38,7 +38,7 @@ There are still differences between the two image and I plan to use this page to
 === Image Comparison
 I have written a tool to compare my generated disk image with the one from Asimov.  It compares the images sector by
 sector (256 bytes per sector) so that it is easier to track differences back to the 
-[[https://github.com/adamgreen/Prince-of-Persia-Apple-II/blob/adamgr/notes/pop-disklayout.creole|disk layout information]].
+[[pop-disklayout.creole|disk layout information]].
 
 ==== Matching Sector Format
 When sectors are exactly the same, the tool will generate output like this:
@@ -141,8 +141,7 @@ image has values of 0xF1 and 0x6E for the same offsets.
 
 === Results
 The results from a run of this tool can be found at
-[[https://github.com/adamgreen/Prince-of-Persia-Apple-II/blob/adamgr/notes/image-diff-3.5.txt]].  The differences
-flagged by this output will now be discussed.
+[[image-diff-3.5.txt]].  The differences flagged by this output will now be discussed.
 
 ==== RWTS16 1:002:0000
 This block contains the beginning of the root volume directory for the ProDOS file system.  I purposely made
