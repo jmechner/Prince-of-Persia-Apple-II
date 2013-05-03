@@ -1,26 +1,26 @@
-RW18,./01_POP_Source/Images/IMG.BGTAB1.PAL,0,*,0xad,0,0
-RW18,./01_POP_Source/Images/IMG.BGTAB2.PAL,0,*,0xad,2,0,0x8400
-RW18,./01_POP_Source/Images/IMG.CHTAB4.SKEL,0,*,0xad,3,0,0x9600
-RW18,./01_POP_Source/Images/IMG.CHTAB4.GD,0,*,0xad,4,0x600,0x9600
-RW18,./01_POP_Source/Images/IMG.CHTAB4.FAT,0,*,0xad,5,0xc00,0x9600
-RW18,./01_POP_Source/Images/IMG.BGTAB1.DUN,0,*,0xad,7,0,0x6000
-RW18,./01_POP_Source/Images/IMG.BGTAB2.DUN,0,*,0xad,9,0,0x8400
-RW18,./01_POP_Source/Images/IMG.CHTAB4.SHAD,0,*,0xad,10,0,0x9600
-RW18,./01_POP_Source/Images/IMG.CHTAB4.VIZ,0,*,0xad,11,0x600,0x9600
+RW18,./01 POP Source/Images/IMG.BGTAB1.PAL,0,*,0xad,0,0
+RW18,./01 POP Source/Images/IMG.BGTAB2.PAL,0,*,0xad,2,0,0x8400
+RW18,./01 POP Source/Images/IMG.CHTAB4.SKEL,0,*,0xad,3,0,0x9600
+RW18,./01 POP Source/Images/IMG.CHTAB4.GD,0,*,0xad,4,0x600,0x9600
+RW18,./01 POP Source/Images/IMG.CHTAB4.FAT,0,*,0xad,5,0xc00,0x9600
+RW18,./01 POP Source/Images/IMG.BGTAB1.DUN,0,*,0xad,7,0,0x6000
+RW18,./01 POP Source/Images/IMG.BGTAB2.DUN,0,*,0xad,9,0,0x8400
+RW18,./01 POP Source/Images/IMG.CHTAB4.SHAD,0,*,0xad,10,0,0x9600
+RW18,./01 POP Source/Images/IMG.CHTAB4.VIZ,0,*,0xad,11,0x600,0x9600
 RW18,./Other/VID.STUFF,0,*,0xad,12,0
 RW18,./Other/STAGE1.SIDEB.DATA,0,*,0xad,18,0
-RW18,./01_POP_Source/Images/IMG.CHTAB6.B,0,*,0xad,24,0,0x6000
+RW18,./01 POP Source/Images/IMG.CHTAB6.B,0,*,0xad,24,0,0x6000
 RW18,./Other/PRINCESS.SIDEB.SCENE,0,*,0xad,26,0
-RW18,./01_POP_Source/Levels/LEVEL13,0,*,0xad,28,0
-RW18,./01_POP_Source/Levels/LEVEL14,0,*,0xad,28,0x900
-RW18,./01_POP_Source/Levels/LEVEL11,0,*,0xad,29,0
-RW18,./01_POP_Source/Levels/LEVEL12,0,*,0xad,29,0x900
-RW18,./01_POP_Source/Levels/LEVEL9,0,*,0xad,30,0
-RW18,./01_POP_Source/Levels/LEVEL10,0,*,0xad,30,0x900
-RW18,./01_POP_Source/Levels/LEVEL7,0,*,0xad,31,0
-RW18,./01_POP_Source/Levels/LEVEL8,0,*,0xad,31,0x900
-RW18,./01_POP_Source/Levels/LEVEL5,0,*,0xad,32,0
-RW18,./01_POP_Source/Levels/LEVEL6,0,*,0xad,32,0x900
-RW18,./01_POP_Source/Levels/LEVEL3,0,*,0xad,33,0
-RW18,./01_POP_Source/Levels/LEVEL4,0,*,0xad,33,0x900
+RW18,./01 POP Source/Levels/LEVEL13,0,*,0xad,28,0
+RW18,./01 POP Source/Levels/LEVEL14,0,*,0xad,28,0x900
+RW18,./01 POP Source/Levels/LEVEL11,0,*,0xad,29,0
+RW18,./01 POP Source/Levels/LEVEL12,0,*,0xad,29,0x900
+RW18,./01 POP Source/Levels/LEVEL9,0,*,0xad,30,0
+RW18,./01 POP Source/Levels/LEVEL10,0,*,0xad,30,0x900
+RW18,./01 POP Source/Levels/LEVEL7,0,*,0xad,31,0
+RW18,./01 POP Source/Levels/LEVEL8,0,*,0xad,31,0x900
+RW18,./01 POP Source/Levels/LEVEL5,0,*,0xad,32,0
+RW18,./01 POP Source/Levels/LEVEL6,0,*,0xad,32,0x900
+RW18,./01 POP Source/Levels/LEVEL3,0,*,0xad,33,0
+RW18,./01 POP Source/Levels/LEVEL4,0,*,0xad,33,0x900
 RW18,./Other/MUSIC.SET3,0,*,0xad,34,0

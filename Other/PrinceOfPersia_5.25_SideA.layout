@@ -35,19 +35,19 @@ RW18,./obj/SUBS,0,*,*,*,*
 RW18,./obj/SOUND,0,*,*,*,*
 RW18,./obj/MOVER,0,*,*,*,*
 RW18,./obj/MISC,0,*,*,*,*
-RW18,./01_POP_Source/Images/IMG.BGTAB1.DUN,0,*,0xa9,5,0,0x6000
-RW18,./01_POP_Source/Images/IMG.CHTAB1,0,*,0xa9,7,0
-RW18,./01_POP_Source/Images/IMG.CHTAB2,0,*,0xa9,9,0,0x8400
-RW18,./01_POP_Source/Images/IMG.CHTAB3,0,*,0xa9,11,0,0x0800
-RW18,./01_POP_Source/Images/IMG.CHTAB5,0,*,0xa9,12,0x600,0xa800
-RW18,./01_POP_Source/Images/IMG.CHTAB4.GD,0,5376,0xa9,13,0xc00,0x9600
-RW18,./01_POP_Source/Images/IMG.BGTAB2.DUN,0,*,0xa9,18,0,0x8400
+RW18,./01 POP Source/Images/IMG.BGTAB1.DUN,0,*,0xa9,5,0,0x6000
+RW18,./01 POP Source/Images/IMG.CHTAB1,0,*,0xa9,7,0
+RW18,./01 POP Source/Images/IMG.CHTAB2,0,*,0xa9,9,0,0x8400
+RW18,./01 POP Source/Images/IMG.CHTAB3,0,*,0xa9,11,0,0x0800
+RW18,./01 POP Source/Images/IMG.CHTAB5,0,*,0xa9,12,0x600,0xa800
+RW18,./01 POP Source/Images/IMG.CHTAB4.GD,0,5376,0xa9,13,0xc00,0x9600
+RW18,./01 POP Source/Images/IMG.BGTAB2.DUN,0,*,0xa9,18,0,0x8400
 RW18,./Other/MUSIC.SET2,0,*,0xa9,20,0
 RW18,./Other/STAGE1.SIDEA.DATA,0,*,0xa9,22,0
-RW18,./01_POP_Source/Images/IMG.CHTAB7,0,*,0xa9,28,0xd00,0x9F00
-RW18,./01_POP_Source/Images/IMG.CHTAB6.A,0,*,0xa9,29,0
+RW18,./01 POP Source/Images/IMG.CHTAB7,0,*,0xa9,28,0xd00,0x9F00
+RW18,./01 POP Source/Images/IMG.CHTAB6.A,0,*,0xa9,29,0
 RW18,./Other/PRINCESS.SIDEA.SCENE,0,*,0xa9,31,0
-RW18,./01_POP_Source/Levels/LEVEL2,0,*,0xa9,32,0x900
-RW18,./01_POP_Source/Levels/LEVEL0,0,*,0xa9,33,0
-RW18,./01_POP_Source/Levels/LEVEL1,0,*,0xa9,33,0x900
+RW18,./01 POP Source/Levels/LEVEL2,0,*,0xa9,32,0x900
+RW18,./01 POP Source/Levels/LEVEL0,0,*,0xa9,33,0
+RW18,./01 POP Source/Levels/LEVEL1,0,*,0xa9,33,0x900
 RW18,./Other/MUSIC.SET1,0,*,0xa9,34,0

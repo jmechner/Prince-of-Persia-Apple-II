@@ -74,13 +74,16 @@ IMAGER=$(call convert-slash,$(TOOL_PATH)/crackle)
 
 
 # Assembler source file paths.
-DISK_ROUTINES=02_POP_Disk_Routines/RW1835
-GAME_SOURCES=01_POP_Source/Source
+DISK_ROUTINES=02\ POP\ Disk\ Routines/RW1835
+GAME_SOURCES=01\ POP\ Source/Source
+
+# Assembler source file paths using globbing operator in place of space.
+GAME_SOURCES_GLOB=01?POP?Source/Source
 
 
 # Game data file paths.
-IMAGE_TABLES=./01_POP_Source/Images
-LEVELS=./01_POP_Source/Levels
+IMAGE_TABLES=./01\ POP\ Source/Images
+LEVELS=./01\ POP\ Source/Levels
 OTHER_FILES=./Other
 
 
@@ -137,7 +140,37 @@ endif
 
 
 # Game data to be included in disk image.
-GAME_DATA=$(wildcard $(IMAGE_TABLES)/* $(LEVELS)/* $(OTHER_FILES)/*)
+GAME_DATA =$(IMAGE_TABLES)/IMG.BGTAB1.DUN
+GAME_DATA+=$(IMAGE_TABLES)/IMG.BGTAB1.PAL
+GAME_DATA+=$(IMAGE_TABLES)/IMG.BGTAB2.DUN
+GAME_DATA+=$(IMAGE_TABLES)/IMG.BGTAB2.PAL
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB1
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB2
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB3
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB4.FAT
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB4.GD
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB4.SHAD
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB4.SKEL
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB4.VIZ
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB5
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB6.A
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB6.B
+GAME_DATA+=$(IMAGE_TABLES)/IMG.CHTAB7
+GAME_DATA+=$(LEVELS)/LEVEL0
+GAME_DATA+=$(LEVELS)/LEVEL1
+GAME_DATA+=$(LEVELS)/LEVEL2
+GAME_DATA+=$(LEVELS)/LEVEL4
+GAME_DATA+=$(LEVELS)/LEVEL5
+GAME_DATA+=$(LEVELS)/LEVEL6
+GAME_DATA+=$(LEVELS)/LEVEL7
+GAME_DATA+=$(LEVELS)/LEVEL8
+GAME_DATA+=$(LEVELS)/LEVEL9
+GAME_DATA+=$(LEVELS)/LEVEL10
+GAME_DATA+=$(LEVELS)/LEVEL11
+GAME_DATA+=$(LEVELS)/LEVEL12
+GAME_DATA+=$(LEVELS)/LEVEL13
+GAME_DATA+=$(LEVELS)/LEVEL14
+GAME_DATA+=$(wildcard $(OTHER_FILES)/*)
 
 
 # Disk layout description for where contents should be laid out on disk.
@@ -153,7 +186,7 @@ DISK_525B_IMAGE=PrinceOfPersia_5.25_SideB.nib
 
 
 # Flags to pass into build tools.
-ASM_FLAGS=--putdirs $(call convert-slash,./01_POP_Source/Source) --outdir $(call convert-slash,$(OUTPUT_DIR))
+ASM_FLAGS=--putdirs "$(call convert-slash,./01 POP Source/Source)" --outdir $(call convert-slash,$(OUTPUT_DIR))
 IMAGER_35_FLAGS=--format hdv_3.5
 IMAGER_525_FLAGS=--format nib_5.25
 
@@ -182,34 +215,36 @@ clean:
 	@echo Cleaning project
 	$(Q) $(REMOVE_DIR) $(call convert-slash,$(OUTPUT_DIR)) $(IGNORE)
 	$(Q) $(REMOVE) $(DISK_35_IMAGE) $(IGNORE)
+	$(Q) $(REMOVE) $(DISK_525A_IMAGE) $(IGNORE)
+	$(Q) $(REMOVE) $(DISK_525B_IMAGE) $(IGNORE)
 
 
 # Rules to assemble .S files
 $(OUTPUT_DIR)/popboot35 : $(DISK_ROUTINES)/POPBOOT35.S Makefile
 	@echo Assembling $<
-	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+	$(Q) $(ASSEMBLER) "$(call convert-slash,$<)" $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 $(OUTPUT_DIR)/rw1835.pop : $(DISK_ROUTINES)/RW1835.POP.S Makefile
 	@echo Assembling $<
-	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+	$(Q) $(ASSEMBLER) "$(call convert-slash,$<)" $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 $(OUTPUT_DIR)/boot : $(GAME_SOURCES)/BOOT.S Makefile
 	@echo Assembling $<
-	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+	$(Q) $(ASSEMBLER) "$(call convert-slash,$<)" $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
-$(OUTPUT_DIR)/% : $(GAME_SOURCES)/%.S Makefile
+$(OUTPUT_DIR)/% : $(GAME_SOURCES_GLOB)/%.S Makefile
 	@echo Assembling $<
-	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+	$(Q) $(ASSEMBLER) "$(call convert-slash,$<)" $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 $(OUTPUT_DIR)/% : $(OTHER_FILES)/%.S Makefile
 	@echo Assembling $<
-	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+	$(Q) $(ASSEMBLER) "$(call convert-slash,$<)" $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 
 # Default rules to patch and assemble .S files.
-$(OUTPUT_DIR)/%.PATCH : $(GAME_SOURCES)/%.S Makefile
+$(OUTPUT_DIR)/%.PATCH : $(GAME_SOURCES_GLOB)/%.S Makefile
 	@echo Patching and Assembling $<
-	$(Q) $(COPY) $(call convert-slash,$<) $(call convert-slash,$(patsubst %.PATCH,%.PATCH.S,$@)) $(QUIET)
+	$(Q) $(COPY) "$(call convert-slash,$<)" $(call convert-slash,$(patsubst %.PATCH,%.PATCH.S,$@)) $(QUIET)
 	$(Q) $(PATCH) -p1 < $(call convert-slash,$(patsubst $(OUTPUT_DIR)/%,$(OTHER_FILES)/%,$@)) $(QUIET)
 	$(Q) $(ASSEMBLER) $(call convert-slash,$(patsubst %.PATCH,%.PATCH.S,$@)) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 	$(Q) $(COPY) $(call convert-slash,$@) $(call convert-slash,$(patsubst %.PATCH,%,$@)) $(QUIET)
