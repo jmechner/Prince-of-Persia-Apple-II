@@ -91,7 +91,7 @@ OUTPUT_DIR=obj
 # Assembly Language source to be built.
 OBJECTS =$(OUTPUT_DIR)/popboot35
 OBJECTS+=$(OUTPUT_DIR)/rw1835.pop
-OBJECTS+=$(OUTPUT_DIR)/BOOT
+OBJECTS+=$(OUTPUT_DIR)/boot
 OBJECTS+=$(OUTPUT_DIR)/RW18525
 OBJECTS+=$(OUTPUT_DIR)/AUTO
 OBJECTS+=$(OUTPUT_DIR)/CTRLSUBS
@@ -188,6 +188,10 @@ $(OUTPUT_DIR)/popboot35 : $(DISK_ROUTINES)/POPBOOT35.S Makefile
 	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
 $(OUTPUT_DIR)/rw1835.pop : $(DISK_ROUTINES)/RW1835.POP.S Makefile
+	@echo Assembling $<
+	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
+
+$(OUTPUT_DIR)/boot : $(GAME_SOURCES)/BOOT.S Makefile
 	@echo Assembling $<
 	$(Q) $(ASSEMBLER) $(call convert-slash,$<) $(ASM_FLAGS) --list $(call convert-slash,$@.LST)
 
