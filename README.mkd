@@ -13,7 +13,7 @@ Thanks to [Jason Scott] (http://www.textfiles.com) and [Tony Diaz] (http://www.a
 
 We extracted and posted the 6502 code because it was a piece of computer history that could be of interest to others, and because if we hadn't, it might have been lost for all time. We did this for fun, not profit. As the author and copyright holder of this source code, I personally have no problem with anyone studying it, modifying it, attempting to run it, etc. Please understand that this does NOT constitute a grant of rights of any kind in Prince of Persia, which is an ongoing Ubisoft game franchise. Ubisoft alone has the right to make and distribute Prince of Persia games.
 
-That's about all I know. If additional information becomes available, I'll post and/or tweet about it (@jmechner). In the meantime, if you have questions -- technical, legal, or otherwise -- I recommend that you direct them to the community at large, whose collective knowledge and expertise far exceeds mine, and will only increase as more people get their eyes on this code.
+That's about all I know. If additional information becomes available, I'll post and/or tweet about it ([@jmechner](https://twitter.com/jmechner)). In the meantime, if you have questions -- technical, legal, or otherwise -- I recommend that you direct them to the community at large, whose collective knowledge and expertise far exceeds mine, and will only increase as more people get their eyes on this code.
 
 As for me, it's time to get back to my day job of making new games and making up stories.
 
