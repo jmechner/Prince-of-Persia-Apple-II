@@ -1,0 +1,222 @@
+== Disk Layout
+An attempt to provide an overview of what I have learned about the layout of the Prince of Persia disk during my
+investigations.
+
+===Code Placement on Disk
+At first I had a hard time figuring out where each Prince Of Persia module ended up on the final disk.  This also made
+it a bit difficult for me to figure out what the RW18 read calls were reading into memory when they specified particular
+tracks.  I then noticed interesting lines at the end of many modules such as this from MASTER.S:
+{{{
+ usr $a9,1,$a80,*-org
+}}}
+
+It turns out that this causes the Merlin assembler to execute a user routine that has been registered on the developer's
+machine.  In the case of Prince of Persia, it calls into the RW18 code to place the resulting binary at the specified
+location on the disk. The code for this RW18 resident code is found in 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/04%20Support/MakeDisk/USR18.S#L16 | 04 Support/MakeDisk/USR18.S]]
+and the following comment gives a pretty good idea of what the parameters mean:
+{{{
+* usr <BbundID>,<track>,<byte offset 0-$11FF>,<byte length>
+}}}
+
+The BbundID's refer to values for indicating the side of the disk:
+{{{
+POPside1 = $a9
+POPside2 = $ad
+POPside3 = $79
+}}}
+
+The allowed bytes offset range would indicate that there are 18 256-byte pages per track which agrees with the name of
+the routines: RW18.
+
+Here is a list of the USR clauses from the POP sources sorted by location:
+{{{
+01 POP Source/Source/HIRES.S:2129:    usr $a9,1,$0000,*-org
+01 POP Source/Source/MASTER.S:1446:   usr $a9,1,$a80,*-org
+01 POP Source/Source/HRTABLES.S:330:  usr $a9,2,$0000,*-org
+01 POP Source/Source/UNPACK.S:882:    usr $a9,2,$a00,*-org
+01 POP Source/Source/TABLES.S:199:    usr $a9,3,$000,*-org
+01 POP Source/Source/FRAMEADV.S:2266: usr $a9,3,$490,*-org
+01 POP Source/Source/GRAFIX.S:2130:   usr $a9,4,$0000,*-org
+01 POP Source/Source/TOPCTRL.S:1739:  usr $a9,4,$a00,*-org
+01 POP Source/Source/FRAMEDEF.S:489:  usr $a9,15,$00,*-org
+01 POP Source/Source/SEQTABLE.S:1715: usr $a9,15,$800,*-org
+01 POP Source/Source/CTRL.S:2167:     usr $a9,16,$00,*-org
+01 POP Source/Source/COLL.S:1514:     usr $a9,16,$b00,*-org
+01 POP Source/Source/GAMEBG.S:1191:   usr $a9,17,$00,*-org
+01 POP Source/Source/AUTO.S:1954:     usr $a9,17,$800,*-org
+01 POP Source/Source/CTRLSUBS.S:2119: usr $a9,19,$200,*-org
+01 POP Source/Source/SPECIALK.S:1351: usr $a9,19,$b00,*-org
+01 POP Source/Source/VERSION.S:13:    usr $a9,19,$11d8,*-org
+01 POP Source/Source/SUBS.S:1765:     usr $a9,20,$400,*-org
+01 POP Source/Source/SOUND.S:359:     usr $a9,20,$e00,*-org
+01 POP Source/Source/MOVER.S:2173:    usr $a9,21,$00,*-org
+01 POP Source/Source/MISC.S:1021:     usr $a9,21,$b00,*-org
+}}}
+
+
+===Data Placement on Disk
+Where the game data files should be placed in the disk image isn't as clear to me by just looking at the contents of
+the source code checked into the git repository.  Through a lot of work it is possible to find where each sector of data
+from disk is loaded into memory and then try to determine what data file was loaded into this location by looking at
+what code later references this location in memory.  I started with this approach but found it too time consuming and a
+bit error prone.  In the end I took an existing 3.5" disk image and compared the bytes in the image to the game data
+files found in the git repository.  The result of this comparison was a map showing where each game data file was
+located on the released game disk.  It also helped me to see initialized portions of the disk which didn't match any of
+the data files in the git repository.
+
+
+===3.5" First 16 Blocks
+The first 16 blocks on the disk are in typical ProDOS format.  Here is a summary of their contents:
+
+|= Start Block |= End Block |= Content Description |
+| 0 |  0 | Standard ProDOS bootloader |
+| 1 |  1 | Unused bootloader blocks - Zero filled |
+| 2 |  5 | Volume Directory |
+| 6 |  6 | Volume Bitmap - Bit Per Block |
+| 7 |  7 | Index Block for PRODOS SystemFile |
+| 8 | 15 | Data Blocks for PRODOS SystemFile |
+
+
+=== Volume Directory
+I pulled the original Volume Directory from a 3.5" disk image on the Asimov website.  This is an overview of what I
+found in the Volume Directory on that image:
+
+* The volume label is 6 characters: "P.O.P."
+* Creation date is 0xDB 0xB2 0x01 0x0F
+** 1101 1011 1011 0010 0000 0001 0000 1111
+** Year = 101 1001 = 0x59 = 89
+* ProDos 1.0
+* Access is 0xC3 = Reformat | Renamed | Write | Read
+* Volume entry length is the expected 0x27 bytes in length.
+* There are 13 entries per volume block as expected.
+* There is 1 active file entry in the root directory.
+* Volume bitmap starts in block 6.
+* There are a total of 0x0640 = 1600 blocks on this 3.5" disk.
+* First and only file entry:
+** Is a sapling (2 - 256 blocks) and has 6 characters in the filename: "PRODOS"
+** File type of 0xFF means it is a System ProDOS file.
+** Index block for this sapling file is at block 8 or offset 0x1000.
+** Uses up 9 blocks (including the index block so 8 blocks of actual data.)
+** File is 0x001000 = 4k bytes in length
+** Creation date is 0x76 0xB4 0x08 0x0B
+*** Year = 101 1010 = 0x5A = 90
+** Version is 0x8 of the OS which created this file.
+** Minimum version is 0x0 as expected.
+** Access is 0xE3 = Destroyed | Renamed | Archive | Read | Write
+** Aux_Type = 0x00 0x00
+** Modified date is 0x76 0xB4 0x3A 0x0F
+
+The single **PRODOS** file on this disk contains the assembled 6502 code for 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/POPBOOT35.S | POPBOOT35.S]]
+and the 
+[[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/RW1835.POP.S | RW1835.POP.S]].
+The ProDOS bootloader will load the contents of this system file into memory starting at address **0x2000**.
+
+On the original disk the sapling index block for this file was located at block 8 and pointed to blocks 7 and 9 - 15
+for the 4k of file data.  I manually modified the root directory file entry for this file and switched the index block
+to be located at block 7 instead and pointed it to contiguous blocks 8 - 15 for the 4k of file data.  This makes it
+easier to place the POPBOOT35.S and RW1835.POP.S object files into the disk image.  The original image
+wasn't in this convenient form since when the first block of the file was written, the OS would have assumed that
+the file could fit in 1 block and would have been treated as a seedling file, therefore putting the data in block 7.
+When the next block was added to the file, the file would have been converted to a sapling file which can be larger than
+1 block.  A sapling file would require a index block which would be placed in the next free block, block 8.
+
+My version of the first 16 blocks on this disk can be found in the PRODOS.VOLUME binary file.
+
+The rest of the blocks on the 3.5" disk are mapped from RW18 locations on the 5.25" disk and will be documented in
+the following sections.
+
+
+===Disk Layout for Side 1
+|= Start Track/Offset |= Content |= Load Location |
+| 0/0x0000 | ** Unknown ** | ??? |
+| 1/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/HIRES.S | HIRES.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/POPBOOT35.S#L47 | POPBOOT35.S:47]] |
+| 1/0x0a80 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S | MASTER.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/02%20POP%20Disk%20Routines/RW1835/POPBOOT35.S#L47 | POPBOOT35.S:47]] |
+| 2/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/HRTABLES.S | HRTABLES.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L200 | MASTER.S:200]] |
+| 2/0x0a00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/UNPACK.S | UNPACK.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L200 | MASTER.S:200]] |
+| 2/0x0e00 | All Zeroes | N/A |
+| 3/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/TABLES.S | TABLES.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1074 | MASTER.S:1074]] |
+| 3/0x0490 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/FRAMEADV.S | FRAMEADV.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1074 | MASTER.S:1074]] |
+| 4/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/GRAFIX.S | GRAFIX.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1077 | MASTER.S:1077]] |
+| 4/0x0a00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/TOPCTRL.S | TOPCTRL.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1077 | MASTER.S:1077]] |
+| 5/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB1.DUN | IMG.BGTAB1.DUN]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L536 | MASTER.S:536]] |
+| 6/0x1100 | All Zeroes | N/A |
+| 7/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB1 | IMG.CHTAB1]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1336 | MASTER.S:1336]] |
+| 9/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB2 | IMG.CHTAB2]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1085 | MASTER.S:1085]] |
+| 10/0x1100 | All Zeroes | N/A |
+| 11/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB3 | IMG.CHTAB3]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1090 | MASTER.S:1090]] |
+| 12/0x0600 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB5 | IMG.CHTAB5]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1093 | MASTER.S:1093]] |
+| 13/0x0c00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.GD | IMG.CHTAB4.GD]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 14/0x0f00 | All Zeroes | N/A |
+| 15/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/FRAMEDEF.S | FRAMEDEF.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1231 | MASTER.S:1231]] |
+| 15/0x0800 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/SEQTABLE.S | SEQTABLE.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1231 | MASTER.S:1231]] |
+| 16/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/CTRL.S | CTRL.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1233 | MASTER.S:1233]] |
+| 16/0x0b00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/COLL.S | COLL.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1233 | MASTER.S:1233]] |
+| 17/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/GAMEBG.S | GAMEBG.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1235 | MASTER.S:1235]] |
+| 17/0x0800 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/AUTO.S | AUTO.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1235 | MASTER.S:1235]] |
+| 18/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB2.DUN | IMG.BGTAB2.DUN]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L549 | MASTER.S:549]] |
+| 18/0x0e00 | All Zeroes | N/A |
+| 19/0x0200 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/CTRLSUBS.S | CTRLSUBS.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1114 | MASTER.S:1114]] |
+| 19/0x0b00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/SPECIALK.S | SPECIALK.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1114 | MASTER.S:1114]] |
+| 19/0x11d8 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/VERSION.S | VERSION.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1114 | MASTER.S:1114]] |
+| 20/0x0000 | MUSIC.SET2 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L270 | MASTER.S:270]] |
+| 20/0x0400 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/SUBS.S | SUBS.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1119 | MASTER.S:1119]] |
+| 20/0x0e00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/SOUND.S | SOUND.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1119 | MASTER.S:1119]] |
+| 20/0x1000 | All Zeroes | N/A | 
+| 21/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MOVER.S | MOVER.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1123 | MASTER.S:1123]] |
+| 21/0x0b00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MISC.S | MISC.S]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1123 | MASTER.S:1123]] |
+| 21/0x1100 | All Zeroes | N/A |
+| 22/0x0000 | STAGE1.SIDEA.DATA | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1168 | MASTER.S:1168]] |
+| 28/0x0c00 | All Zeroes | N/A |
+| 28/0x0d00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB7 | IMG.CHTAB7]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1283 | MASTER.S:1283]] |
+| 29/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB6.A | IMG.CHTAB6.A]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1250 | MASTER.S:1250]] |
+| 30/0x0000 | PRINCESS.SIDEA.SCENE | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1250 | MASTER.S:1250]] |
+| 32/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL2 | LEVEL2]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 33/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL0 | LEVEL0]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 33/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL1 | LEVEL1]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 34/0x0000 | MUSIC.SET1 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L258 | MASTER.S:258]] |
+
+
+===Disk Layout for Side 2
+|= Start Track/Offset |= Content |= Load Location |
+| 0/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB1.PAL | IMG.BGTAB1.PAL]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L536 | MASTER.S:536]] |
+| 2/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB2.PAL | IMG.BGTAB2.PAL]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L549 | MASTER.S:549]] |
+| 3/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.SKEL | IMG.CHTAB4.SKEL]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 4/0x0000 | All Zeroes | N/A |
+| 4/0x0600 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.GD | IMG.CHTAB4.GD]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 5/0x0900 | All Zeroes | N/A |
+| 5/0x0C00 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.FAT | IMG.CHTAB4.FAT]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 6/0x0f00 | All Zeroes | N/A |
+| 7/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB1.DUN | IMG.BGTAB1.DUN]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L536 | MASTER.S:536]] |
+| 8/0x1100 | All Zeroes | N/A |
+| 9/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.BGTAB2.DUN | IMG.BGTAB2.DUN]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L549 | MASTER.S:549]] |
+| 9/0x0e00 | All Zeroes | N/A |
+| 10/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.SHAD | IMG.CHTAB4.SHAD]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 11/0x0200 | All Zeroes | N/A |
+| 11/0x0600 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB4.VIZ | IMG.CHTAB4.VIZ]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L553 | MASTER.S:553]] |
+| 12/0x0000 | VID.STUFF | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L502 | MASTER.S:502]] |
+| 17/0x0000 | ** Unknown ** | ??? |
+| 18/0x0000 | STAGE1.SIDEB.DATA | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1195 | MASTER.S:1195]] |
+| 23/0x0000 | Saved Game Data | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L421 | MASTER.S:258]] |
+| 24/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Images/IMG.CHTAB6.B | IMG.CHTAB6.B]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1302 | MASTER.S:1302]] |
+| 26/0x0000 | PRINCESS.SIDEB.SCENE | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L1299 | MASTER.S:1299]] |
+| 27/0x0800 | All Zeroes | N/A |
+| 28/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL13 | LEVEL13]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 28/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL14 | LEVEL14]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 29/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL11 | LEVEL11]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 29/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL12 | LEVEL12]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 30/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL9 | LEVEL9]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 30/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL10 | LEVEL10]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 31/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL7 | LEVEL7]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 31/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL8 | LEVEL8]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 32/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL5 | LEVEL5]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 32/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL6 | LEVEL6]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 33/0x0000 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL3 | LEVEL3]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 33/0x0900 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Levels/LEVEL4 | LEVEL4]] | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L593 | MASTER.S:593]] |
+| 34/0x0000 | MUSIC.SET3 | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/MASTER.S#L258 | MASTER.S:258]] |
+
+
+===Disk Layout for Side 3
+|= Start Track/Offset |= Content |= Load Location |
+| 14/0x0600 | SUPER.HIRES.DATA | [[https://github.com/jmechner/Prince-of-Persia-Apple-II/blob/master/01%20POP%20Source/Source/UNPACK.S#L844 | Wrong track?]] |

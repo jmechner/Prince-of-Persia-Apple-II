@@ -1,0 +1,10 @@
+--- a/obj/SPECIALK.PATCH.S	2012-06-15 23:48:54.000000000 -0700
++++ b/obj/SPECIALK.PATCH.S	2013-03-18 17:36:57.000000000 -0700
+@@ -1,6 +1,6 @@
+ * specialk
+ EditorDisk = 0
+-FinalDisk = 0 ;removes all cheat keys
++FinalDisk = 1 ;removes all cheat keys
+ DebugKeys = 0
+  tr on
+  lst off

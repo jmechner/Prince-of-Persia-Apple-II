@@ -2,3 +2,9 @@
 *.S crlf diff
 LICENSE crlf diff
 README.mkd crlf diff
+*.creole crlf diff
+*.txt crlf diff
+Makefile crlf diff
+Other/*.PATCH crlf diff
+Other/*.layout crlf diff
+/.gitattributes crlf diff
