@@ -2,7 +2,7 @@
 
 Some background: This archive contains the source code for the original Prince of Persia game that I wrote on the Apple II, in 6502 assembly language, between 1985-89. The game was first released by Broderbund Software in 1989, and is part of the ongoing Ubisoft game franchise.
 
-For a capsule summary of Prince of Persia's 25-year history, and my involvement with its various incarnations, see [jordanmechner.com/prince-of-persia](http://jordanmechner.com/prince-of-persia) and [jordanmechner.com/bio](http://jordanmechner.com/bio).
+For a capsule summary of Prince of Persia's 25-year history, and my involvement with its various incarnations, see [jordanmechner.com/projects/prince-of-persia](http://jordanmechner.com/projects/prince-of-persia) and [jordanmechner.com/bio](http://jordanmechner.com/bio).
 
 For those interested in a fuller understanding of the context -- creative, business, personal, and technical -- in which this source code was created, I've published my dev journals from that period as a print book, ebook, and in blog form. Take your pick at [jordanmechner.com/ebook](http://jordanmechner.com/ebook).
 
